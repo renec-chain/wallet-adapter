@@ -6,7 +6,6 @@ import {
   WalletNotReadyError,
   WalletSignMessageError,
   WalletSignTransactionError,
-  WalletDisconnectionError,
   WalletPublicKeyError,
   WalletReadyState,
   WalletDisconnectedError,
@@ -157,11 +156,7 @@ export class DemonWalletAdapter extends BaseMessageSignerWalletAdapter {
       wallet.off("accountChanged", this._accountChanged);
       wallet.off("disconnect", this._disconnected);
 
-      try {
-        await wallet.disconnect();
-      } catch (error: any) {
-        this.emit("error", new WalletDisconnectionError(error?.message, error));
-      }
+      await wallet.disconnect();
     }
 
     this.emit("disconnect");
@@ -251,11 +246,7 @@ export class DemonWalletAdapter extends BaseMessageSignerWalletAdapter {
       wallet.off("accountChanged", this._accountChanged);
       wallet.off("disconnect", this._disconnected);
 
-      try {
-        await wallet.disconnect();
-      } catch (error: any) {
-        this.emit("error", new WalletDisconnectionError(error?.message, error));
-      }
+      await wallet.disconnect();
 
       this.emit("error", new WalletDisconnectedError());
       this.emit("disconnect");
