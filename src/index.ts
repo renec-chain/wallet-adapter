@@ -6,9 +6,9 @@ import {
   WalletNotReadyError,
   WalletSignMessageError,
   WalletSignTransactionError,
-  WalletDisconnectionError,
   WalletPublicKeyError,
   WalletReadyState,
+  WalletDisconnectedError,
 } from "@solana/wallet-adapter-base";
 import { Connection, Keypair, PublicKey, VersionedTransaction } from "@solana/web3.js";
 import type { Transaction } from "@solana/web3.js";
@@ -134,6 +134,7 @@ export class DemonWalletAdapter extends BaseMessageSignerWalletAdapter {
       }
 
       wallet.on("accountChanged", this._accountChanged);
+      wallet.on("disconnect", this._disconnected);
 
       this._wallet = wallet;
       this._publicKey = publicKey;
@@ -153,12 +154,9 @@ export class DemonWalletAdapter extends BaseMessageSignerWalletAdapter {
       this._wallet = null;
       this._publicKey = null;
       wallet.off("accountChanged", this._accountChanged);
+      wallet.off("disconnect", this._disconnected);
 
-      try {
-        await wallet.disconnect();
-      } catch (error: any) {
-        this.emit("error", new WalletDisconnectionError(error?.message, error));
-      }
+      await wallet.disconnect();
     }
 
     this.emit("disconnect");
@@ -237,5 +235,21 @@ export class DemonWalletAdapter extends BaseMessageSignerWalletAdapter {
     this._publicKey = newPublicKey;
     console.log("emit connect", newPublicKey);
     this.emit("connect", newPublicKey);
+  };
+
+  private _disconnected = async () => {
+    const wallet = this._wallet;
+    if (wallet) {
+      this._wallet = null;
+      this._publicKey = null;
+
+      wallet.off("accountChanged", this._accountChanged);
+      wallet.off("disconnect", this._disconnected);
+
+      await wallet.disconnect();
+
+      this.emit("error", new WalletDisconnectedError());
+      this.emit("disconnect");
+    }
   };
 }
