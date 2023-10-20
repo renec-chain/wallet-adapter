@@ -15,6 +15,17 @@ import { Connection, Keypair, PublicKey, VersionedTransaction } from "@solana/we
 import type { Transaction } from "@solana/web3.js";
 import { EventEmitter } from "eventemitter3";
 
+interface EncryptInput {
+  cleartext: Uint8Array;
+  toPublic: Uint8Array;
+}
+
+interface DecryptInput {
+  ciphertext: Uint8Array,
+  fromPublic: Uint8Array,
+  nonce: Uint8Array
+}
+
 interface DemonWallet extends EventEmitter {
   isDemon?: boolean;
   connect(): Promise<string>;
@@ -40,13 +51,14 @@ interface DemonWallet extends EventEmitter {
     publicKey?: PublicKey
   ): Promise<T>;
   encrypt(
-    cleartext: Uint8Array,
+    inputs: EncryptInput[],
     publicKey?: PublicKey
   ): Promise<{
     ciphertext: Uint8Array;
     nonce: Uint8Array;
-  }>;
-  decrypt(ciphertext: Uint8Array, nonce: Uint8Array, publicKey?: PublicKey): Promise<Uint8Array>;
+    fromPublic: Uint8Array;
+  }[]>;
+  decrypt(inputs: DecryptInput[], publicKey?: PublicKey): Promise<(Uint8Array | null)[]>;
   isConnected: boolean;
 }
 
@@ -225,24 +237,24 @@ export class DemonWalletAdapter extends BaseMessageSignerWalletAdapter {
     }
   }
 
-  async encrypt(cleartext: Uint8Array) {
+  async encrypt(inputs: EncryptInput[]) {
     if (!this._wallet || !this._publicKey) {
       throw new Error("Please connect app before sign transaction!");
     }
     try {
-      return await this._wallet.encrypt(cleartext, this._publicKey);
+      return await this._wallet.encrypt(inputs, this._publicKey);
     } catch (error: any) {
       this.emit("error", new WalletError(error?.message, error));
       throw error;
     }
   }
 
-  async decrypt(ciphertext: Uint8Array, nonce: Uint8Array) {
+  async decrypt(inputs: DecryptInput[]) {
     if (!this._wallet || !this._publicKey) {
       throw new Error("Please connect app before sign transaction!");
     }
     try {
-      return await this._wallet.decrypt(ciphertext, nonce, this._publicKey);
+      return await this._wallet.decrypt(inputs, this._publicKey);
     } catch (error: any) {
       this.emit("error", new WalletError(error?.message, error));
       throw error;
