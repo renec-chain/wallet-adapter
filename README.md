@@ -53,6 +53,14 @@ interface DemonWallet extends EventEmitter {
     signers?: Keypair[],
     publicKey?: PublicKey
   ): Promise<string>;
+  encrypt(
+    cleartext: Uint8Array,
+    publicKey?: PublicKey
+  ): Promise<{
+    ciphertext: Uint8Array;
+    nonce: Uint8Array;
+  }>;
+  decrypt(ciphertext: Uint8Array, nonce: Uint8Array, publicKey?: PublicKey): Promise<Uint8Array>;
   isConnected: boolean;
 }
 ```
@@ -222,5 +230,28 @@ try {
   console.log("txid", txid);
 } catch (error) {
   console.log("User denied sign transaction!");
+}
+```
+```javascript
+// encrypt
+try {
+  const message = `Test encrypt`;
+  const encodedMessage = new TextEncoder().encode(message);
+  const encrypt = await wallet.encrypt(encodedMessage);
+  setEncrypt(encrypt);
+} catch (error) {
+  console.log("User denied sign encrypt!");
+}
+```
+```javascript
+// decrypt
+try {
+  if (!encrypt) return toast.error("Please encrypt before decrypt!");
+
+  const result = await wallet.decrypt(encrypt.ciphertext, encrypt.nonce);
+
+  setResult(new TextDecoder().decode(result));
+} catch (error) {
+  console.log("User denied sign decrypt!");
 }
 ```

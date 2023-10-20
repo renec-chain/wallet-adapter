@@ -9,6 +9,7 @@ import {
   WalletPublicKeyError,
   WalletReadyState,
   WalletDisconnectedError,
+  WalletError,
 } from "@solana/wallet-adapter-base";
 import { Connection, Keypair, PublicKey, VersionedTransaction } from "@solana/web3.js";
 import type { Transaction } from "@solana/web3.js";
@@ -38,6 +39,14 @@ interface DemonWallet extends EventEmitter {
     signers?: Keypair[],
     publicKey?: PublicKey
   ): Promise<T>;
+  encrypt(
+    cleartext: Uint8Array,
+    publicKey?: PublicKey
+  ): Promise<{
+    ciphertext: Uint8Array;
+    nonce: Uint8Array;
+  }>;
+  decrypt(ciphertext: Uint8Array, nonce: Uint8Array, publicKey?: PublicKey): Promise<Uint8Array>;
   isConnected: boolean;
 }
 
@@ -212,6 +221,30 @@ export class DemonWalletAdapter extends BaseMessageSignerWalletAdapter {
       return await this._wallet.signMessage(message, this._publicKey);
     } catch (error: any) {
       this.emit("error", new WalletSignMessageError(error?.message, error));
+      throw error;
+    }
+  }
+
+  async encrypt(cleartext: Uint8Array) {
+    if (!this._wallet || !this._publicKey) {
+      throw new Error("Please connect app before sign transaction!");
+    }
+    try {
+      return await this._wallet.encrypt(cleartext, this._publicKey);
+    } catch (error: any) {
+      this.emit("error", new WalletError(error?.message, error));
+      throw error;
+    }
+  }
+
+  async decrypt(ciphertext: Uint8Array, nonce: Uint8Array) {
+    if (!this._wallet || !this._publicKey) {
+      throw new Error("Please connect app before sign transaction!");
+    }
+    try {
+      return await this._wallet.decrypt(ciphertext, nonce, this._publicKey);
+    } catch (error: any) {
+      this.emit("error", new WalletError(error?.message, error));
       throw error;
     }
   }
