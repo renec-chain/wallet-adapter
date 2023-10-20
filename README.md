@@ -54,13 +54,14 @@ interface DemonWallet extends EventEmitter {
     publicKey?: PublicKey
   ): Promise<string>;
   encrypt(
-    cleartext: Uint8Array,
+    inputs: EncryptInput[],
     publicKey?: PublicKey
   ): Promise<{
     ciphertext: Uint8Array;
     nonce: Uint8Array;
-  }>;
-  decrypt(ciphertext: Uint8Array, nonce: Uint8Array, publicKey?: PublicKey): Promise<Uint8Array>;
+    fromPublic: Uint8Array;
+  }[]>;
+  decrypt(inputs: DecryptInput[], publicKey?: PublicKey): Promise<(Uint8Array | null)[]>;
   isConnected: boolean;
 }
 ```
@@ -235,9 +236,18 @@ try {
 ```javascript
 // encrypt
 try {
-  const message = `Test encrypt`;
-  const encodedMessage = new TextEncoder().encode(message);
-  const encrypt = await wallet.encrypt(encodedMessage);
+  const toPublic = new PublicKey('Fja4due9hSbywGtJf8DPy91e3LtZfuTDaswYYh1UWR72').toBytes();
+
+  const encrypt = await wallet.encrypt([
+    {
+      cleartext: new TextEncoder().encode(`Test encrypt`),
+      toPublic,
+    },
+    {
+      cleartext: new TextEncoder().encode(`Test encrypt 2`),
+      toPublic,
+    },
+  ]);
   setEncrypt(encrypt);
 } catch (error) {
   console.log("User denied sign encrypt!");
@@ -248,7 +258,7 @@ try {
 try {
   if (!encrypt) return toast.error("Please encrypt before decrypt!");
 
-  const result = await wallet.decrypt(encrypt.ciphertext, encrypt.nonce);
+  const result = await wallet.decrypt(encrypt);
 
   setResult(new TextDecoder().decode(result));
 } catch (error) {
