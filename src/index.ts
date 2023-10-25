@@ -16,14 +16,14 @@ import type { Transaction } from "@solana/web3.js";
 import { EventEmitter } from "eventemitter3";
 
 interface EncryptInput {
-  cleartext: Uint8Array;
-  toPublic: Uint8Array;
+  cleartext: string;
+  toPublic: string;
 }
 
 interface DecryptInput {
-  ciphertext: Uint8Array,
-  fromPublic: Uint8Array,
-  nonce: Uint8Array
+  ciphertext: string,
+  fromPublic: string,
+  nonce: string
 }
 
 interface DemonWallet extends EventEmitter {
@@ -54,11 +54,11 @@ interface DemonWallet extends EventEmitter {
     inputs: EncryptInput[],
     publicKey?: PublicKey
   ): Promise<{
-    ciphertext: Uint8Array;
-    nonce: Uint8Array;
-    fromPublic: Uint8Array;
+    ciphertext: string;
+    nonce: string;
+    fromPublic: string;
   }[]>;
-  decrypt(inputs: DecryptInput[], publicKey?: PublicKey): Promise<(Uint8Array | null)[]>;
+  decrypt(inputs: DecryptInput[], publicKey?: PublicKey): Promise<(string | null)[]>;
   isConnected: boolean;
 }
 

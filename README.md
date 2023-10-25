@@ -236,19 +236,35 @@ try {
 ```javascript
 // encrypt
 try {
-  const toPublic = new PublicKey('Fja4due9hSbywGtJf8DPy91e3LtZfuTDaswYYh1UWR72').toBytes();
+  const toPublic = 'Fja4due9hSbywGtJf8DPy91e3LtZfuTDaswYYh1UWR72';
 
+  // wallet DwSmR358M7CfKasmEhgV6wHxZHR1Xxssr5Qx7kLipnJq encrypt
   const encrypt = await wallet.encrypt([
     {
-      cleartext: new TextEncoder().encode(`Test encrypt`),
+      cleartext: "Test encrypt",
       toPublic,
     },
     {
-      cleartext: new TextEncoder().encode(`Test encrypt 2`),
+      cleartext: "Test encrypt 2",
       toPublic,
     },
   ]);
+
   setEncrypt(encrypt);
+
+  // Encrypt:
+  // [
+  //   {
+  //     ciphertext: "0b4deffb97030c697f4d15b948703e4e55c84323a1ae661891cbe737",
+  //     fromPublic: "DwSmR358M7CfKasmEhgV6wHxZHR1Xxssr5Qx7kLipnJq",
+  //     nonce: "4ba69b97b7d55da54df4ce12b097c15b58ef4de83f7a30f4"
+  //   },
+  //   {
+  //     ciphertext: "d6822ab539a6ef0c2f25899175c19724337c5f0c0bd3f33ed9cb3d110fd0",
+  //     fromPublic: "DwSmR358M7CfKasmEhgV6wHxZHR1Xxssr5Qx7kLipnJq",
+  //     nonce: "564152c0cb0feabd7b4899096ce77c3de4f473b377f9c66b"
+  //   },
+  // ]
 } catch (error) {
   console.log("User denied sign encrypt!");
 }
@@ -258,9 +274,11 @@ try {
 try {
   if (!encrypt) return toast.error("Please encrypt before decrypt!");
 
+  // wallet Fja4due9hSbywGtJf8DPy91e3LtZfuTDaswYYh1UWR72 decrypt
   const result = await wallet.decrypt(encrypt);
 
-  setResult(new TextDecoder().decode(result));
+  console.log(result);
+  // ["Test encrypt", "Test encrypt 2"]
 } catch (error) {
   console.log("User denied sign decrypt!");
 }
