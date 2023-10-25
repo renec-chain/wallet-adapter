@@ -255,14 +255,14 @@ try {
   // Encrypt:
   // [
   //   {
-  //     ciphertext: "0b4deffb97030c697f4d15b948703e4e55c84323a1ae661891cbe737",
-  //     fromPublic: "DwSmR358M7CfKasmEhgV6wHxZHR1Xxssr5Qx7kLipnJq",
-  //     nonce: "4ba69b97b7d55da54df4ce12b097c15b58ef4de83f7a30f4"
+  //     nonce: "EH2nq3edkuv41TWJ6k1KMJhC3H5JJKRbA"
+  //     ciphertext: "nbkAgU2PugH5VLMmh3QyXNkZ4eztBHgnAhGth",
+  //     fromPublic: "DwSmR358M7CfKasmEhgV6wHxZHR1Xxssr5Qx7kLipnJq"
   //   },
   //   {
-  //     ciphertext: "d6822ab539a6ef0c2f25899175c19724337c5f0c0bd3f33ed9cb3d110fd0",
-  //     fromPublic: "DwSmR358M7CfKasmEhgV6wHxZHR1Xxssr5Qx7kLipnJq",
-  //     nonce: "564152c0cb0feabd7b4899096ce77c3de4f473b377f9c66b"
+  //     nonce: "EH2nq3edkuv41TWJ6k1KMJhC3H5JJKRbA"
+  //     ciphertext: "8bEERGJvyj5JQcF1akSsFeambSqk5knMSL38vDr3E",
+  //     fromPublic: "DwSmR358M7CfKasmEhgV6wHxZHR1Xxssr5Qx7kLipnJq"
   //   },
   // ]
 } catch (error) {
