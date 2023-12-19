@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@solana/wallet-adapter-base": "^0.9.22",
-    "@solana/web3.js": "^1.77.3",
+    "@solana/web3.js": "^1.87.6",
     "eventemitter3": "^5.0.1"
   }
 }
